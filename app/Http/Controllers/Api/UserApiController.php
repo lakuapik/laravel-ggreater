@@ -18,6 +18,7 @@ class UserApiController extends Controller
             'name' => 'required|max:64',
             'email' => 'required|email|unique:users',
             'password' => ['required', Password::default()],
+            'birthdate' => 'required|date',
             'location' => 'required|max:128',
             'timezone' => ['required', Rule::in(get_all_timezones())],
         ]);
@@ -46,6 +47,7 @@ class UserApiController extends Controller
             'name' => 'required|max:64',
             'email' => 'required|email|unique:users,email,'.$user->id,
             'password' => ['nullable', Password::default()],
+            'birthdate' => 'required|date',
             'location' => 'required|max:128',
             'timezone' => ['required', Rule::in(get_all_timezones())],
         ]);

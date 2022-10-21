@@ -20,6 +20,7 @@ class AuthenticationWebController extends Controller
             'name' => 'required|max:64',
             'email' => 'required|email|unique:users',
             'password' => ['required', Password::default(), 'confirmed'],
+            'birthdate' => 'required|date',
             'location' => 'required|max:128',
             'timezone' => ['required', Rule::in(get_all_timezones())],
         ]);

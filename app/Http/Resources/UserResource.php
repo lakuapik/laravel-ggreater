@@ -9,12 +9,14 @@ class UserResource extends JsonResource
 {
     /**
      * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
         /** @var User $this */
+        $data = $this->only(['id', 'name', 'email', 'location', 'timezone']);
 
-        return $this->only(['id', 'name', 'email', 'location', 'timezone']);
+        return array_merge($data, [
+            'birthdate' => $this->birthdate?->toISOString(),
+        ]);
     }
 }

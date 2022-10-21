@@ -3,6 +3,7 @@
 use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
@@ -15,26 +16,28 @@ uses(Tests\TestCase::class);
 
 it('success creating a user given valid data', function () {
     //
-    $data = [
-        'name' => fake()->name(),
-        'email' => fake()->email(),
-        'password' => Str::random(),
-        'location' => fake()->city(),
-        'timezone' => Arr::random(get_all_timezones()),
-    ];
+    $data = User::factory()->make()->only([
+        'name', 'email', 'birthdate', 'location', 'timezone',
+    ]);
 
-    postJson(route('api.users.store'), $data)
+    postJson(route('api.users.store'), array_merge($data, [
+        'password' => '12345!@#',
+        'password_confirmation' => '12345!@#',
+    ]))
         ->assertStatus(Response::HTTP_CREATED)
         ->assertJsonPath('success', true)
         ->assertJsonPath('message', 'Successfully create a user')
         ->assertJsonPath('data.name', $data['name'])
         ->assertJsonPath('data.email', $data['email']);
 
-    assertDatabaseHas((new User)->getTable(), Arr::except($data, 'password'));
+    assertDatabaseHas((new User)->getTable(), $data);
+
+    $birthdate = Carbon::parse($data['birthdate'])->format('Y-m-d');
 
     expect(User::latest()->first())
         ->name->toBe($data['name'])
         ->email->toBe($data['email'])
+        ->birthdate->format('Y-m-d')->toBe($birthdate)
         ->location->toBe($data['location'])
         ->timezone->toBe($data['timezone']);
 });
@@ -45,6 +48,7 @@ it('fails creating a user given invaid data', function () {
         'email' => 'invalid email',
         'password' => '12345',
         'timezone' => 'invalid timezone',
+        'birthdate' => 'invalid date',
     ];
 
     postJson(route('api.users.store'), $data)
@@ -54,6 +58,7 @@ it('fails creating a user given invaid data', function () {
             'name' => 'The name field is required.',
             'email' => 'The email must be a valid email address.',
             'password' => 'The password must be at least 8 characters.',
+            'birthdate' => 'The birthdate is not a valid date.',
             'location' => 'The location field is required.',
             'timezone' => 'The selected timezone is invalid.',
         ]);
@@ -75,6 +80,7 @@ it('success getting a user given valid id', function () {
             'email' => $user->email,
             'location' => $user->location,
             'timezone' => $user->timezone,
+            'birthdate' => $user->birthdate->toISOString(),
         ]);
 });
 
@@ -91,6 +97,7 @@ it('success updating a user given valid data', function () {
         'name' => $user->name,
         'email' => $user->email,
         'location' => fake()->city(),
+        'birthdate' => date('Y-m-d'),
         'timezone' => Arr::random(get_all_timezones()),
     ];
 

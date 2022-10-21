@@ -30,6 +30,7 @@ it('success register in a user given valid data', function () {
         'email' => fake()->unique()->safeEmail(),
         'password' => '12345!@#',
         'password_confirmation' => '12345!@#',
+        'birthdate' => date('Y-m-d'),
         'location' => fake()->city(),
         'timezone' => Arr::random(get_all_timezones()),
     ];
