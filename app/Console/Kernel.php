@@ -9,11 +9,13 @@ class Kernel extends ConsoleKernel
 {
     protected function schedule(Schedule $schedule): void
     {
-        // TBD: put greeting scheduler here, every half hour
+        // because there is UTC +X and a half,
+        // so we need to run in every half hour (30 minutes)
+        $schedule->command('app:send-greetings')->everyThirtyMinutes();
     }
 
     protected function commands(): void
     {
-        // pass
+        $this->load(__DIR__.'/Commands');
     }
 }

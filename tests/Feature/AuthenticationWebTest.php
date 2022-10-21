@@ -54,6 +54,8 @@ it('success register in a user given valid data', function () {
         ->email->toBe($data['email'])
         ->location->toBe($data['location'])
         ->timezone->toBe($data['timezone']);
+
+    expect($user->greetings()->count())->toBe(1);
 });
 
 it('fails registering a user given invalid data', function () {
@@ -152,4 +154,26 @@ it('success logging out a user given invalid session', function () {
         ->assertSee('Login');
 
     assertGuest('web');
+});
+
+it('success redirecting to dashboard if there is a session', function () {
+    //
+    $user = new_test_user();
+
+    followingRedirects()
+        ->actingAs($user)
+        ->get(route('login'))
+        ->assertStatus(Response::HTTP_OK)
+        ->assertSee('Dashboard')
+        ->assertSee($user->name);
+});
+
+it('fails accessing dashboard without a session', function () {
+    //
+    assertGuest('web');
+
+    followingRedirects()
+        ->get(route('dashboard'))
+        ->assertStatus(Response::HTTP_OK)
+        ->assertSee('Login');
 });

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\GreetingType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Models\Greeting;
 use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
@@ -24,6 +26,9 @@ class UserApiController extends Controller
         ]);
 
         $user = User::create($validatedData);
+
+        Greeting::factory()->withUser($user)
+            ->create(['type' => GreetingType::BIRTHDAY]);
 
         // TBD: send email verification to email?
         // TBD: send welcome notification to email?
@@ -53,6 +58,15 @@ class UserApiController extends Controller
         ]);
 
         $user->update($validatedData);
+
+        if ($user->wasChanged('birthdate') || $user->wasChanged('timezone')) {
+            //.
+            $user->greetings()->ready()
+                ->where('type', GreetingType::BIRTHDAY->value)->delete();
+
+            Greeting::factory()->withUser($user)
+                ->create(['type' => GreetingType::BIRTHDAY]);
+        }
 
         // TBD: if email was changed, resend email verification?
 

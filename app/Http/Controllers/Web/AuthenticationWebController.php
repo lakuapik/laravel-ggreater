@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\GreetingType;
 use App\Http\Controllers\Controller;
+use App\Models\Greeting;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,6 +30,9 @@ class AuthenticationWebController extends Controller
         $user = User::create(array_merge($validatedData, [
             'password' => Hash::make($validatedData['password']),
         ]));
+
+        Greeting::factory()->withUser($user)
+            ->create(['type' => GreetingType::BIRTHDAY]);
 
         Auth::login($user);
 

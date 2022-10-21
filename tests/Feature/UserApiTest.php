@@ -32,14 +32,18 @@ it('success creating a user given valid data', function () {
 
     assertDatabaseHas((new User)->getTable(), $data);
 
+    $user = User::latest()->first();
+
     $birthdate = Carbon::parse($data['birthdate'])->format('Y-m-d');
 
-    expect(User::latest()->first())
+    expect($user)
         ->name->toBe($data['name'])
         ->email->toBe($data['email'])
         ->birthdate->format('Y-m-d')->toBe($birthdate)
         ->location->toBe($data['location'])
         ->timezone->toBe($data['timezone']);
+
+    expect($user->greetings()->count())->toBe(1);
 });
 
 it('fails creating a user given invaid data', function () {
@@ -94,11 +98,11 @@ it('success updating a user given valid data', function () {
     $user = new_test_user();
 
     $data = [
-        'name' => $user->name,
-        'email' => $user->email,
+        'name' => 'Ismail',
+        'email' => 'ismail@mail.com',
+        'birthdate' => $user->birthdate->format('Y-m-d'),
         'location' => fake()->city(),
-        'birthdate' => date('Y-m-d'),
-        'timezone' => Arr::random(get_all_timezones()),
+        'timezone' => $user->timezone,
     ];
 
     putJson(route('api.users.update', $user->id), $data)
@@ -156,4 +160,32 @@ it('success deleting a user given valid id', function () {
 it('fails deleting a user given invalid id', function () {
     //
     deleteJson(route('api.users.destroy', 1337))->assertApiResponseNotFound();
+});
+
+it('success creating new greeting given user update their birthday or timezone', function () {
+    //
+    $user = new_test_user();
+
+    $data = [
+        'name' => $user->name,
+        'email' => $user->email,
+        'location' => $user->location,
+        'birthdate' => today()->addMonth()->format('Y-m-d'),
+        'timezone' => Arr::random(get_all_timezones()),
+    ];
+
+    expect($user->greetings()->count())->toBe(0);
+
+    putJson(route('api.users.update', $user->id), $data)
+        ->assertStatus(Response::HTTP_ACCEPTED)
+        ->assertJsonPath('success', true)
+        ->assertJsonPath('message', 'Successfully update a user')
+        ->assertJsonPath('data.location', $data['location'])
+        ->assertJsonPath('data.timezone', $data['timezone']);
+
+    expect($user->greetings()->count())->toBe(1);
+
+    expect($user->refresh())
+        ->location->toBe($data['location'])
+        ->timezone->toBe($data['timezone']);
 });

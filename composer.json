@@ -44,11 +44,11 @@
         "analyse": "phpstan analyse",
         "coverage": [
             "@putenv XDEBUG_MODE=coverage",
-            "pest --coverage --parallel --processes=4"
+            "pest --coverage"
         ],
         "coverage-html": [
             "@putenv XDEBUG_MODE=coverage",
-            "pest --coverage-html coverage --parallel --processes=4"
+            "pest --coverage-html coverage"
         ],
         "coverage-serve": [
             "Composer\\Config::disableProcessTimeout",

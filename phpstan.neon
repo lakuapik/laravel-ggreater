@@ -4,6 +4,10 @@ includes:
 parameters:
   paths:
     - app
+    - config
+    - database
+    - lang
+    - routes
     - tests
   excludePaths:
     - vendor
