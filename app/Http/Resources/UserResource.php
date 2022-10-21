@@ -16,7 +16,7 @@ class UserResource extends JsonResource
         $data = $this->only(['id', 'name', 'email', 'location', 'timezone']);
 
         return array_merge($data, [
-            'birthdate' => $this->birthdate?->toISOString(),
+            'birthdate' => $this->birthdate->toISOString(),
         ]);
     }
 }

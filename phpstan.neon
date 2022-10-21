@@ -1,0 +1,15 @@
+includes:
+  - ./vendor/nunomaduro/larastan/extension.neon
+
+parameters:
+  paths:
+    - app
+    - tests
+  excludePaths:
+    - vendor
+  level: 6 # https://phpstan.org/user-guide/rule-levels
+  checkMissingIterableValueType: false
+  checkGenericClassInNonGenericObjectType: false
+  ignoreErrors:
+    - '#Illuminate\\Testing\\TestResponse::assertApiResponseNotFound#'
+    - '#Pest\\Support\\Extendable#'
