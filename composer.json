@@ -1,26 +1,26 @@
 {
-    "name": "laravel/laravel",
+    "name": "lakuapik/laravel-ggreater",
     "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "description": "The Laravel GGreater app",
+    "keywords": [
+        "php",
+        "laravel"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
         "guzzlehttp/guzzle": "^7.2",
         "kodepandai/laravel-api-response": "^1.2",
         "laravel/framework": "^9.19",
-        "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
-        "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^6.1",
         "pestphp/pest": "^1.22",
         "pestphp/pest-plugin-laravel": "^1.3",
-        "phpunit/phpunit": "^9.5.10",
         "spatie/laravel-ignition": "^1.0"
     },
     "autoload": {
@@ -39,20 +39,32 @@
         }
     },
     "scripts": {
+        "coverage": [
+            "@putenv XDEBUG_MODE=coverage",
+            "pest --coverage --parallel --processes=4"
+        ],
+        "coverage-html": [
+            "@putenv XDEBUG_MODE=coverage",
+            "pest --coverage-html coverage --parallel --processes=4"
+        ],
+        "coverage-serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "php -S localhost:8001 -t coverage"
+        ],
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "php artisan serve"
+        ],
+        "fresh": "php artisan migrate:fresh --drop-views --seed",
         "lint": "pint",
         "pest": "pest --stop-on-failure",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "php artisan package:discover --ansi"
         ],
-        "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
-        ],
-        "post-root-package-install": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-        ],
-        "post-create-project-cmd": [
-            "@php artisan key:generate --ansi"
+        "test": [
+            "@lint",
+            "@pest"
         ]
     },
     "extra": {

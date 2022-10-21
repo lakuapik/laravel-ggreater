@@ -26,6 +26,7 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         $this->renderable(function (Throwable $e, Request $request) {
+            //
             if ($request->wantsJson() || str_contains($request->path(), 'api')) {
                 return ApiExceptionHandler::renderAsApiResponse($e);
             }
