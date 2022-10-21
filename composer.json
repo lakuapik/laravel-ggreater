@@ -12,7 +12,8 @@
         "guzzlehttp/guzzle": "^7.2",
         "kodepandai/laravel-api-response": "^1.2",
         "laravel/framework": "^9.19",
-        "laravel/tinker": "^2.7"
+        "laravel/tinker": "^2.7",
+        "sammyjo20/saloon-laravel": "^1.5"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

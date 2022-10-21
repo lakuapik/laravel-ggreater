@@ -2,7 +2,15 @@
 
 use App\Http\Controllers\Web\AuthenticationWebController;
 use App\Http\Middleware\RedirectIfAuthenticated;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+Route::post('send-email', function (Request $request) {
+    return [
+        $request->all(),
+        $_SERVER,
+    ];
+});
 
 Route::middleware('web')->group(function () {
     //

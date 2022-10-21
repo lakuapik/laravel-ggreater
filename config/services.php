@@ -31,4 +31,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'email-service' => [
+        'url' => env('EMAIL_SERVICE_URL', 'https://email-service.digitalenvision.com.au'),
+        'timeout' => env('EMAIL_SERVICE_TIMEOUT', 5000), // in miliseconds
+    ],
+
 ];
