@@ -17,7 +17,8 @@ class UserApiController extends Controller
     public function store(): ApiResponse
     {
         $validatedData = ApiResponse::validateOrFail([
-            'name' => 'required|max:64',
+            'first_name' => 'required|max:32',
+            'last_name' => 'required|max:32',
             'email' => 'required|email|unique:users',
             'password' => ['required', Password::default()],
             'birthdate' => 'required|date',
@@ -49,7 +50,8 @@ class UserApiController extends Controller
     public function update(User $user): ApiResponse
     {
         $validatedData = ApiResponse::validateOrFail([
-            'name' => 'required|max:64',
+            'first_name' => 'required|max:32',
+            'last_name' => 'required|max:32',
             'email' => 'required|email|unique:users,email,'.$user->id,
             'password' => ['nullable', Password::default()],
             'birthdate' => 'required|date',

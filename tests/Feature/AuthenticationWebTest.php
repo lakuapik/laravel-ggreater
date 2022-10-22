@@ -26,7 +26,8 @@ it('success showing register form', function () {
 it('success register in a user given valid data', function () {
     //
     $data = [
-        'name' => fake()->name(),
+        'first_name' => fake()->firstName(),
+        'last_name' => fake()->lastName(),
         'email' => fake()->unique()->safeEmail(),
         'password' => '12345!@#',
         'password_confirmation' => '12345!@#',
@@ -40,7 +41,8 @@ it('success register in a user given valid data', function () {
         ->post(route('register'), $data)
         ->assertStatus(Response::HTTP_OK)
         ->assertSee('Dashboard')
-        ->assertSee($data['name']);
+        ->assertSee($data['first_name'])
+        ->assertSee($data['last_name']);
 
     $user = User::latest()->first();
 
@@ -50,7 +52,8 @@ it('success register in a user given valid data', function () {
     assertDatabaseHas((new User)->getTable(), ['email' => $data['email']]);
 
     expect($user)
-        ->name->toBe($data['name'])
+        ->first_name->toBe($data['first_name'])
+        ->last_name->toBe($data['last_name'])
         ->email->toBe($data['email'])
         ->location->toBe($data['location'])
         ->timezone->toBe($data['timezone']);
@@ -71,7 +74,8 @@ it('fails registering a user given invalid data', function () {
         ->post(route('register'), $data)
         ->assertStatus(Response::HTTP_OK)
         ->assertSee('Register')
-        ->assertSee('The name field is required.')
+        ->assertSee('The first name field is required.')
+        ->assertSee('The last name field is required.')
         ->assertSee('The email must be a valid email address.')
         ->assertSee('The location field is required.')
         ->assertSee('The selected timezone is invalid.');
@@ -103,7 +107,7 @@ it('success logging in a user given valid credential', function () {
         ])
         ->assertStatus(Response::HTTP_OK)
         ->assertSee('Dashboard')
-        ->assertSee($user->name);
+        ->assertSee($user->first_name);
 
     assertAuthenticated('web');
     assertAuthenticatedAs($user);
@@ -165,7 +169,7 @@ it('success redirecting to dashboard if there is a session', function () {
         ->get(route('login'))
         ->assertStatus(Response::HTTP_OK)
         ->assertSee('Dashboard')
-        ->assertSee($user->name);
+        ->assertSee($user->first_name);
 });
 
 it('fails accessing dashboard without a session', function () {

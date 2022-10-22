@@ -17,7 +17,8 @@ uses(Tests\TestCase::class);
 it('success creating a user given valid data', function () {
     //
     $data = User::factory()->make()->only([
-        'name', 'email', 'birthdate', 'location', 'timezone',
+        'first_name', 'last_name', 'email',
+        'birthdate', 'location', 'timezone',
     ]);
 
     postJson(route('api.users.store'), array_merge($data, [
@@ -27,7 +28,8 @@ it('success creating a user given valid data', function () {
         ->assertStatus(Response::HTTP_CREATED)
         ->assertJsonPath('success', true)
         ->assertJsonPath('message', 'Successfully create a user')
-        ->assertJsonPath('data.name', $data['name'])
+        ->assertJsonPath('data.first_name', $data['first_name'])
+        ->assertJsonPath('data.last_name', $data['last_name'])
         ->assertJsonPath('data.email', $data['email']);
 
     assertDatabaseHas((new User)->getTable(), $data);
@@ -37,7 +39,9 @@ it('success creating a user given valid data', function () {
     $birthdate = Carbon::parse($data['birthdate'])->format('Y-m-d');
 
     expect($user)
-        ->name->toBe($data['name'])
+        ->first_name->toBe($data['first_name'])
+        ->last_name->toBe($data['last_name'])
+        ->full_name->toBe($data['first_name'].' '.$data['last_name'])
         ->email->toBe($data['email'])
         ->birthdate->format('Y-m-d')->toBe($birthdate)
         ->location->toBe($data['location'])
@@ -59,7 +63,8 @@ it('fails creating a user given invaid data', function () {
         ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
         ->assertJsonPath('success', false)
         ->assertInvalid([
-            'name' => 'The name field is required.',
+            'first_name' => 'The first name field is required.',
+            'last_name' => 'The last name field is required.',
             'email' => 'The email must be a valid email address.',
             'password' => 'The password must be at least 8 characters.',
             'birthdate' => 'The birthdate is not a valid date.',
@@ -80,11 +85,13 @@ it('success getting a user given valid id', function () {
         ->assertJsonPath('message', 'Succesfully fetch a user')
         ->assertJsonPath('data', [
             'id' => $user->id,
-            'name' => $user->name,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
             'email' => $user->email,
             'location' => $user->location,
             'timezone' => $user->timezone,
             'birthdate' => $user->birthdate->toISOString(),
+            'full_name' => $user->full_name,
         ]);
 });
 
@@ -98,8 +105,9 @@ it('success updating a user given valid data', function () {
     $user = new_test_user();
 
     $data = [
-        'name' => 'Ismail',
-        'email' => 'ismail@mail.com',
+        'first_name' => 'Ismail',
+        'last_name' => 'Marjuki',
+        'email' => 'ismail@marjuki.com',
         'birthdate' => $user->birthdate->format('Y-m-d'),
         'location' => fake()->city(),
         'timezone' => $user->timezone,
@@ -123,7 +131,8 @@ it('fails updating a user given invalid data', function () {
     $user2 = new_test_user();
 
     $data = [
-        'name' => Str::random(128),
+        'first_name' => Str::random(64),
+        'last_name' => Str::random(64),
         'email' => $user2->email,
         'location' => $user1->location,
         'timezone' => 'invalid timezone',
@@ -133,13 +142,15 @@ it('fails updating a user given invalid data', function () {
         ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
         ->assertJsonPath('success', false)
         ->assertInvalid([
-            'name' => 'The name must not be greater than 64 characters.',
+            'first_name' => 'The first name must not be greater than 32 characters.',
+            'last_name' => 'The last name must not be greater than 32 characters.',
             'email' => 'The email has already been taken.',
             'timezone' => 'The selected timezone is invalid.',
         ]);
 
     expect($user1->refresh())
-        ->name->not->toBe($data['name'])
+        ->first_name->not->toBe($data['first_name'])
+        ->last_name->not->toBe($data['last_name'])
         ->email->not->toBe($data['email'])
         ->location->toBe($data['location'])
         ->timezone->not->toBe($data['timezone']);
@@ -167,7 +178,8 @@ it('success creating new greeting given user update their birthday or timezone',
     $user = new_test_user();
 
     $data = [
-        'name' => $user->name,
+        'first_name' => $user->first_name,
+        'last_name' => $user->last_name,
         'email' => $user->email,
         'location' => $user->location,
         'birthdate' => today()->addMonth()->format('Y-m-d'),

@@ -16,7 +16,7 @@ class User extends Authenticatable
     use Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'password',
+        'first_name', 'last_name', 'email', 'password',
         'birthdate', 'location', 'timezone',
     ];
 
@@ -34,11 +34,9 @@ class User extends Authenticatable
         return $this->hasMany(Greeting::class);
     }
 
-    // TODO: split user name into first_name and last_name
-    //       and use virtual column for full_name
     public function getFullNameAttribute(): string
     {
-        return $this->name;
+        return $this->first_name.' '.$this->last_name;
     }
 
     /**
@@ -47,7 +45,9 @@ class User extends Authenticatable
      */
     public function setBirthdateAttribute(mixed $value): void
     {
-        $this->attributes['birthdate'] = Carbon::parse($value)->setTimezone('UTC');
+        $this->attributes['birthdate'] = Carbon::parse($value)
+            ->setTimezone($this->timezone ?: 'UTC')
+            ->setTimezone('UTC');
     }
 
     public function nextBirthday(): Carbon

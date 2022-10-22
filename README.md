@@ -89,12 +89,12 @@ Last time i run, it got *98.77%* coverage
   ✓ it success showing app version
 
   Tests:  32 passed
-  Time:   2.36s
+  Time:   2.06s
 
-  Cov:    98.77%
+  Cov:    98.19%
 
   Console/Commands/SendGreetingsCommand  ....................... 100.0 %
-  Console/Kernel  .............................................. 100.0 %
+  Console/Kernel 14 ............................................. 50.0 %
   Enums/GreetingType 17 ......................................... 83.3 %
   Events/OnEmailServiceJobWasSentGreeting  ..................... 100.0 %
   Exceptions/Handler  .......................................... 100.0 %

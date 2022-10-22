@@ -19,7 +19,8 @@ class AuthenticationWebController extends Controller
     public function register(Request $request): RedirectResponse
     {
         $validatedData = $request->validate([
-            'name' => 'required|max:64',
+            'first_name' => 'required|max:32',
+            'last_name' => 'required|max:32',
             'email' => 'required|email|unique:users',
             'password' => ['required', Password::default(), 'confirmed'],
             'birthdate' => 'required|date',

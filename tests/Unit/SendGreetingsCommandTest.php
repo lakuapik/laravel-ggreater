@@ -5,6 +5,7 @@ use App\Models\Greeting;
 use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
+use function Pest\Laravel\travelTo;
 
 uses(Tests\TestCase::class);
 
@@ -14,6 +15,12 @@ it('should queue sendGreetingToEmailServiceJob given birthday is today', functio
     $users->each(fn (User $user) => Greeting::factory()->withUser($user)->create());
 
     Bus::fake();
+
+    travelTo(today('UTC')->setTime(9, 0));
+
+    Bus::assertDispatchedTimes(SendGreetingToEmailServiceJob::class, 0);
+
+    travelTo(today('UTC')->setTime(9, 0));
 
     Artisan::call('app:send-greetings');
 

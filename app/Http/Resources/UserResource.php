@@ -13,10 +13,13 @@ class UserResource extends JsonResource
     public function toArray($request): array
     {
         /** @var User $this */
-        $data = $this->only(['id', 'name', 'email', 'location', 'timezone']);
+        $data = $this->only([
+            'id', 'first_name', 'last_name', 'email', 'location', 'timezone',
+        ]);
 
         return array_merge($data, [
             'birthdate' => $this->birthdate->toISOString(),
+            'full_name' => $this->full_name,
         ]);
     }
 }
